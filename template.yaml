@@ -42,6 +42,33 @@ Resources:
       Environment:
         Variables:
           IS_LOCAL: false
+      Policies: 
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:GetObjectLegalHold
+                - s3:GetObjectRetention
+                - s3:GetObjectTorrent
+                - s3:GetObjectVersion
+                - s3:GetObjectVersionAcl
+                - s3:GetObjectVersionForReplication
+                - s3:GetObjectVersionTorrent
+                - s3:ListBucket
+                - s3:ListBucketMultipartUploads
+                - s3:ListBucketVersions
+                - s3:ListMultipartUploadParts
+                - s3:AbortMultipartUpload
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                - s3:PutObject
+                - s3:PutObjectLegalHold
+                - s3:PutObjectRetention
+                - s3:RestoreObject
+              Resource:
+                - arn:aws:s3:::cdn-xsalesconsumer/*
+                - arn:aws:s3:::cdn-xsalesconsumer
       # Policies: 
       #   - S3CrudPolicy:
       #     BucketName: "cdn-xsalesconsumer" 

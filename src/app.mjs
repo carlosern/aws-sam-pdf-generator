@@ -12,6 +12,8 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
   
 
+const s3Client = new S3Client({ region: process.env.REGION });
+
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -134,44 +136,57 @@ export const lambdaHandler = async (event, context) => {
         //     })
         // }
         
-        const s3Key = `${new Date().toISOString()}.pdf`
+        //const s3Key = `${new Date().toISOString()}.pdf`
 
         //const pdfBase64 = buffer.toString('base64');
 
-            // Retornar el PDF como respuesta
-        const response = {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': 'attachment; filename="holamundo.pdf"',                
-                'Content-Length': savedBuffer.length,
-            },
-            body: pdfBase64,
-            isBase64Encoded: true,
-        };
 
-        console.log("Response:", response); 
+
             
-        // const s3Key = `tmp/${new Date().toISOString()}.pdf`;
+         const s3Key = `tmp/${new Date().toISOString()}.pdf`;
 
-        //     // Subir el archivo comprimido a S3
-        // const command = new PutObjectCommand({
-        //     Bucket: DELTABUCKET,
-        //     Key: s3Key,
-        //     Body: buffer,
-        //     ContentType: "application/pdf",
-        // });
+            // Subir el archivo comprimido a S3
+        const command = new PutObjectCommand({
+            Bucket: DELTABUCKET,
+            Key: s3Key,
+            Body: buffer,
+            ContentType: "application/pdf",
+        });
             
 
-        // try {
-        //     await s3Client.send(command);
-        //     console.log("file uploaded:", s3Key);
-        //     resolve();
-        //   } catch (error) {
-        //     console.error("Error compressAndUploadToS3:", error);
-        //     reject(error);
-        // }
+        try {
+            await s3Client.send(command);
+            console.log("file uploaded:", s3Key);
+            //resolve();
+          } catch (error) {
+            console.error("Error compressAndUploadToS3:", error);
+            //reject(error);
+        }
+
+          //el truco para que este presignedURL funcione, es que el role de la lambda debe tener permisos de lectura, no solo de escritura
+    const presignedUrl = await generatePresignedUrl(DELTABUCKET, s3Key, 60 * 60 * 24); // 1 dia?
+
         
+        // // Retornar el PDF como respuesta
+        // const response = {
+        //     statusCode: 200,
+        //     headers: {
+        //         'Content-Type': 'application/pdf',
+        //         'Content-Disposition': 'attachment; filename="holamundo.pdf"',
+        //         'Content-Length': savedBuffer.length,
+        //     },
+        //     body: pdfBase64,
+        //     isBase64Encoded: true,
+        // };
+        
+        // Retornar el link al pdf como respuesta
+       const response =  {
+            'statusCode': 200,
+            'body': JSON.stringify({
+                downloadUrl: presignedUrl,
+            })
+        }
+
          // convert stream to b64
         //const b64 = buffer.toString('base64'); 
         // await browser.close();
@@ -189,6 +204,7 @@ export const lambdaHandler = async (event, context) => {
         // }
 
 
+        console.log("Response:", response); 
         return response;
         
         //   await page.goto("https://www.example.com", { waitUntil: "networkidle0" });
@@ -255,3 +271,24 @@ export const lambdaHandler = async (event, context) => {
         };
     }
 };
+
+async function generatePresignedUrl(bucketName, objectKey, expirationTimeInSeconds) {
+    try {
+      // Crear comando para obtener objeto desde S3
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: objectKey,
+      });
+  
+      // Generar URL pre-firmada
+      const signedUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: expirationTimeInSeconds,
+      });
+  
+      console.log("Generated pre-signed URL:", signedUrl);
+      return signedUrl;
+    } catch (error) {
+      console.error("Error generating pre-signed URL:", error);
+      throw error;
+    }
+  }

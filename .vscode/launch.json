@@ -13,7 +13,9 @@
             ],
             "program": "${workspaceFolder}/debug/debugGenerator.mjs",
             "env": {
-                "IS_LOCAL": "true"
+                "IS_LOCAL": "true",
+                "AWS_PROFILE": "consumer",
+                "AWS_REGION": "us-east-2"
             }
         }
     ]
