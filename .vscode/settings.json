@@ -1,0 +1,17 @@
+{
+    "serverlessConsole.services": [
+        {
+            "type": "cloudformation",
+            "title": "PDF-GENERATOR",
+            "timeOffsetInMs": 0,
+            "awsProfile": "consumer",
+            "stacks": [
+                {
+                    "region": "us-east-2",
+                    "stackName": "pdf-generator",
+                    "stage": "dev"
+                }
+            ]
+        }
+    ]
+}
