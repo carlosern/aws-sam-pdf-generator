@@ -15,7 +15,8 @@
             "env": {
                 "IS_LOCAL": "true",
                 "AWS_PROFILE": "consumer",
-                "AWS_REGION": "us-east-2"
+                "AWS_REGION": "us-east-2",
+                "BUCKET_NAME": "cdn-xsalesconsumer"
             }
         }
     ]

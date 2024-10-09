@@ -10,6 +10,12 @@ Globals:
   Function:
     Timeout: 25
 
+Parameters:
+  BucketName:
+    Type: String
+    Default: "cdn-xsalesconsumer"
+    Description: The name of the bucket where the files will be stored
+
 Resources:
   ChromiumLayer:
     Type: AWS::Serverless::LayerVersion
@@ -18,6 +24,7 @@ Resources:
       ContentUri: layers/chromium
       CompatibleRuntimes:
         - &nodejsRuntime nodejs18.x
+      # esto de &nodejsRuntime y *nodejsRuntime es un manejo de alias/variables propio de yaml
       # Chromium doesn't currently have ARM support; see https://github.com/Sparticuz/chromium#can-i-use-arm-or-graviton-instances
       CompatibleArchitectures:
         - &chromiumArch x86_64
@@ -38,10 +45,11 @@ Resources:
         - !Ref ChromiumLayer
       # Adjust as necessary
       Timeout: 30
-      MemorySize: 1024
+      MemorySize: 2048
       Environment:
         Variables:
           IS_LOCAL: false
+          BUCKET_NAME: !Ref BucketName
       Policies: 
         - Statement:
             - Effect: Allow
@@ -67,11 +75,8 @@ Resources:
                 - s3:PutObjectRetention
                 - s3:RestoreObject
               Resource:
-                - arn:aws:s3:::cdn-xsalesconsumer/*
-                - arn:aws:s3:::cdn-xsalesconsumer
-      # Policies: 
-      #   - S3CrudPolicy:
-      #     BucketName: "cdn-xsalesconsumer" 
+                - !Sub arn:${AWS::Partition}:s3:::${BucketName}
+                - !Sub arn:${AWS::Partition}:s3:::${BucketName}/*
       Events:
         PdfGenerator:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
