@@ -32,15 +32,6 @@ export const lambdaHandler = async (event, context) => {
 
         const DELTABUCKET =  "cdn-xsalesconsumer" //process.env.DELTABUCKET_BUCKET_NAME;
 
-        // const browser = await puppeteer.launch({
-        //     args: chromium.args,
-        //     defaultViewport: chromium.defaultViewport,
-        //     executablePath: await chromium.executablePath(),
-        //     headless: chromium.headless,
-        // });
-
-        
-
         const __dirname = path.dirname(fileURLToPath(import.meta.url));
         console.log("Loading template");
         const file = fs.readFileSync(path.resolve(__dirname, 'template.hbs'), 'utf8')
@@ -52,15 +43,7 @@ export const lambdaHandler = async (event, context) => {
 
         
         console.log("Using remote Chromium");
-        // const browser = await puppeteer.launch({
-        //     args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-        //     defaultViewport: chromium.defaultViewport,
-        //     executablePath: await chromium.executablePath()
-        //         //"https://github.com/Sparticuz/chromium/releases/download/v110.0.1/chromium-v110.0.1-pack.tar"
-        //     ,
-        //     headless: chromium.headless,
-        //     ignoreHTTPSErrors: true,
-        // });
+        
         
         const IS_LOCAL = process.env.IS_LOCAL === 'true' ? true : false
         const localChromiumPath = "/tmp/localChromium/chromium/linux-1365805/chrome-linux/chrome"
@@ -87,14 +70,7 @@ export const lambdaHandler = async (event, context) => {
                 ignoreHTTPSErrors: true,
             });
         }
-        // const browser = await puppeteer.launch({
-        //     args: IS_LOCAL ? puppeteer.defaultArgs() : chromium.args,
-        //     defaultViewport: chromium.defaultViewport,
-        //     executablePath: IS_LOCAL
-        //       ? "/tmp/localChromium/chromium/linux-1365805/chrome-linux/chrome"
-        //       : await chromium.executablePath(),
-        //     headless: IS_LOCAL ? false : chromium.headless,
-        // });
+        
         
           const page = await browser.newPage();
         
@@ -125,23 +101,6 @@ export const lambdaHandler = async (event, context) => {
 
                 // Codificar el buffer del PDF en base64 para enviarlo en la respuesta
         const pdfBase64 = savedBuffer.toString('base64');
-        
-        // convertir el buffer a base64
-
-        //retornar el buffer como pdf
-        // return {
-        //     'statusCode': 200,
-        //     'body': JSON.stringify({
-        //         result: 'success', buffer
-        //     })
-        // }
-        
-        //const s3Key = `${new Date().toISOString()}.pdf`
-
-        //const pdfBase64 = buffer.toString('base64');
-
-
-
             
          const s3Key = `tmp/${new Date().toISOString()}.pdf`;
 
@@ -187,80 +146,13 @@ export const lambdaHandler = async (event, context) => {
             })
         }
 
-         // convert stream to b64
-        //const b64 = buffer.toString('base64'); 
-        // await browser.close();
-        // res.send({ statusCode: 200, pdfData: b64 });
-        // } catch (err) {
-        // res.send({ statusCode: 500, userMessage: err });
-        // }
-// }
-
-        // const response =  {
-        //     'statusCode': 200,
-        //     'body': JSON.stringify({
-        //         result: 'success', browserVersion, pageTitle
-        //     })
-        // }
+         
 
 
         console.log("Response:", response); 
         return response;
         
-        //   await page.goto("https://www.example.com", { waitUntil: "networkidle0" });
-        
-        //   const browserVersion = await browser.version();
-        //   const pageTitle = await page.title();
-        
-        //   await page.close();
-        
-        //   await browser.close();
-        
-        
-        // return {
-        //     'statusCode': 200,
-        //     'body': JSON.stringify({
-        //         result: 'success', browserVersion, pageTitle
-        //     })
-        // }
-
-        //assert.strictEqual(pageTitle, "Example Domain");
-        
-        
-        // console.log("Using remote Chromium");
-        // const browser = await puppeteer.launch({
-        //     args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-        //     defaultViewport: chromium.defaultViewport,
-        //     executablePath: await chromium.executablePath(
-        //         "https://github.com/Sparticuz/chromium/releases/download/v129.0.0/chromium-v129.0.0-pack.tar"
-        //     ),
-        //     headless: chromium.headless,
-        //     ignoreHTTPSErrors: true,
-        // });
-
-        // console.log("Browser created");
-
-        // const file = fs.readFileSync(path.resolve(__dirname, 'templates/template.hbs'), 'utf8')
-    
-        // const template = handlebars.compile(file)
-        // const content = template()
-        
-        // console.log("Read content", content);
-
-        // const page = await browser.newPage();
-        // await page.setContent(content);
-        // await page.emulateMediaType("screen");
-        // console.info("Page settet");
-        
-        // const buffer = await page.pdf({ format: "A4" });
-        // await page.close();
-        // await browser?.close();
-        // console.info("PDF generation finished");
-        
-        // //escribir el buffer en /tmp
-        // fs.writeFileSync('/tmp/hello.pdf', buffer);
-        // console.log("PDF written to /tmp/hello.pdf");
-
+       
 
 
     } catch (err) {
