@@ -30,7 +30,7 @@ const s3Client = new S3Client({ region: process.env.REGION });
 export const lambdaHandler = async (event, context) => {
     try {
 
-        const DELTABUCKET =  "cdn-xsalesconsumer" //process.env.DELTABUCKET_BUCKET_NAME;
+        const DELTABUCKET =  process.env.BUCKET_NAME;
 
         const __dirname = path.dirname(fileURLToPath(import.meta.url));
         console.log("Loading template");
