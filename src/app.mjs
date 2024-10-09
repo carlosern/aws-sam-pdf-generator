@@ -30,15 +30,20 @@ const s3Client = new S3Client({ region: process.env.REGION });
 export const lambdaHandler = async (event, context) => {
     try {
 
-        const DELTABUCKET =  process.env.BUCKET_NAME;
+      const DELTABUCKET = process.env.BUCKET_NAME;
+      
+      
 
         const __dirname = path.dirname(fileURLToPath(import.meta.url));
         console.log("Loading template");
         const file = fs.readFileSync(path.resolve(__dirname, 'template.hbs'), 'utf8')
     
         const template = handlebars.compile(file)
+      //setear la fecha del dia en formato iso
+        var data = { "date":new Date().toISOString()};
+        const content = template(data)
         
-        const content = template()
+        //const content = template()
         console.log("template", content);
 
         
